@@ -5,7 +5,7 @@ import crypto from 'crypto'
 import keyTokenService from './keyToken.service.js'
 import { createTokenPair } from '../auth/authUtils.js'
 import { getInforData } from '../utils/index.js'
-import { AuthFailureError, BadrequestError } from '../core/error.response.js'
+import { AuthFailureError, BadrequestError, ForbiddenError } from '../core/error.response.js'
 import { findByEmail } from './shop.service.js'
 
 
@@ -84,7 +84,7 @@ class AccessService {
                 userId: newShop._id,
                 publicKey,
                 privateKey,
-                refreshToken : tokens.refreshToken
+                refreshToken: tokens.refreshToken
             })
 
             if (!keyStore) {
@@ -101,6 +101,29 @@ class AccessService {
         return {
             code: 200,
             metadata: null
+        }
+    }
+
+    static handleRefreshToken = async ({ keyStore, user, refreshToken }) => {
+        const { userId, email } = user
+        if (keyStore.refreshTokensUsed.includes(refreshToken)) { // refresh token bị sử dụng lại
+            await keyTokenService.deleteKeyByUserId(userId) // xóa và bắt login lại
+            throw new ForbiddenError('Error !! pls relogin')
+        }
+
+        if (keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Unregistered shop')
+        
+        const foundShop = await findByEmail({ email })
+        if (!foundShop) throw new AuthFailureError('Unregistered shop')
+
+        const tokens = await createTokenPair({ userId, email }, keyStore.publicKey, keyStore.privateKey)
+        keyStore.refreshToken = tokens.refreshToken
+        keyStore.refreshTokensUsed.push(refreshToken)
+        await keyStore.save()
+       
+        return {
+            user,
+            tokens
         }
     }
 

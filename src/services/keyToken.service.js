@@ -30,12 +30,16 @@ class keyTokenService {
     }
 
     static finByUserId = async (userId) => {
-        const key = await keyTokenModel.findOne({ user: userId }).lean()
-        return key
+        const keyStore = await keyTokenModel.findOne({ user: userId })
+        return keyStore
     }
 
     static removeKey = async (id) => {
         return await keyTokenModel.findByIdAndDelete(id)
+    }
+
+    static deleteKeyByUserId = async (userId) => {
+        return await keyTokenModel.deleteOne({user: userId})
     }
 }
 

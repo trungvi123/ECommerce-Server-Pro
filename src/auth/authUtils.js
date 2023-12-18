@@ -8,7 +8,8 @@ import keyTokenService from '../services/keyToken.service.js'
 const HEADER = {
     API_KEY: 'x-api-key',
     AUTHORIZATION: 'athorization',
-    CLIENT_ID: 'x-client-id'
+    CLIENT_ID: 'x-client-id',
+    REFRESHTOKEN : 'x-rtoken-id'
 }
 
 
@@ -46,17 +47,33 @@ const authentication = asyncHandler(async (req, res, next) => {
     if (!userId) throw new AuthFailureError('Invalid Request')
 
     
-    const key = await keyTokenService.finByUserId(userId)
-    if (!key) throw new NotFoundError('Not found key')
-   
+    const keyStore = await keyTokenService.finByUserId(userId)
+    if (!keyStore) throw new NotFoundError('Not found key')
+  
+    const refreshToken = req.headers[HEADER.REFRESHTOKEN]
+    if(refreshToken){
+        try {
+            const Userdecode = JWT.verify(refreshToken, keyStore.privateKey)
+            if (Userdecode.userId !== userId) throw new AuthFailureError('Invalid User')
+            req.keyStore = keyStore
+            req.user = Userdecode
+            req.refreshToken = refreshToken
+
+            return next()
+        } catch (error) {
+            throw error
+        }
+    }
+
     const accessToken = req.headers[HEADER.AUTHORIZATION]
     
     if (!accessToken) throw new AuthFailureError('Invalid Request')
 
     try {
-        const Userdecode = JWT.verify(accessToken, key.publicKey)
+        const Userdecode = JWT.verify(accessToken, keyStore.publicKey)
         if (Userdecode.userId !== userId) throw new AuthFailureError('Invalid User')
-        req.keyStore = key
+        req.keyStore = keyStore
+        req.user = Userdecode
         return next()
     } catch (error) {
         throw error

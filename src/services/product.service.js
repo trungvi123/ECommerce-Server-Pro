@@ -2,8 +2,10 @@
 
 import { BadrequestError } from "../core/error.response.js"
 import { productModel, clothingModel, electronicsModel } from "../models/product.model.js"
-import { getDraftListByShop, getPublishedListByShop, publishProductByShop, 
-        searchProduct, unpublishProductByShop 
+import {
+    getAllProduct,
+    getDraftListByShop, getProductById, getPublishedListByShop, publishProductByShop,
+    searchProduct, unpublishProductByShop
 } from "../models/repositories/product.repo.js"
 
 class ProductFactory {
@@ -44,6 +46,20 @@ class ProductFactory {
     static async getPublishedListByShop({ product_shop, limit = 50, skip = 0 }) {
         const query = { product_shop, isPublished: true }
         return await getPublishedListByShop({ query, limit, skip })
+    }
+
+    static async getAllProduct({ limit = 50, page = 1, sort = 'ctime', filter = { isPublished: true } }) {
+        return await getAllProduct({
+            limit, page, sort, filter,
+            select: ['product_name', 'product_description', 'product_thumb']
+        })
+    }
+
+    static async getProductById({ product_id }) {
+        return await getProductById({
+            product_id,
+            unselect: ['__v', 'product_variations']
+        })
     }
 
 }

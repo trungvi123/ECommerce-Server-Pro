@@ -43,7 +43,7 @@ const createTokenPair = async (payload, publicKey, privateKey) => {
 const authentication = asyncHandler(async (req, res, next) => {
     
 
-    const userId = req.headers[HEADER.CLIENT_ID]
+    const userId = req.headers[HEADER.CLIENT_ID] 
     if (!userId) throw new AuthFailureError('Invalid Request')
 
     

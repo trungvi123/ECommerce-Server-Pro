@@ -24,14 +24,24 @@ const productSchema = new mongoose.Schema({
     },
     product_variations: { type: Array, default: [] },
     isDraft: { type: Boolean, default: true, index: true, select: false },
-    isPublished: { type: Boolean, default: true, index: false, select: false }
+    isPublished: { type: Boolean, default: false, index: true, select: false }
 }, {
     timestamps: true,
     collection: COLLECTION_NAME
 })
 
+// create index for search
+
+productSchema.index({
+    product_name: 'text',
+    product_description: 'text'
+})
+
+// handle before product save
 productSchema.pre('save', function (next) {
-    this.product_slug = slugify(this.product_name, { lower: true })
+    if (!this.product_slug) {
+        this.product_slug = slugify(this.product_name, { lower: true })
+    }
     next()
 })
 

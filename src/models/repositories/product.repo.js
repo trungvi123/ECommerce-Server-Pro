@@ -1,3 +1,4 @@
+import { getFiledsSelect, notGetFiledsSelect } from "../../utils/index.js"
 import { productModel } from "../product.model.js"
 
 // GET
@@ -17,6 +18,25 @@ const getListByQuery = async ({ query, limit = 50, skip = 0 }) => {
         .sort({ updateAt: -1 })
         .skip(skip)
         .limit(limit)
+        .lean()
+}
+
+
+const getAllProduct = async ({ page, limit, sort,filter,select }) => {
+    const skip = (page - 1) * limit
+    const sortBy = sort === 'ctime' ? { _id: -1 } : { _id: 1 }
+
+    return await productModel.find(filter)
+        .sort(sortBy)
+        .skip(skip)
+        .limit(limit)
+        .select(getFiledsSelect(select))
+        .lean()
+}
+
+const getProductById = async ({ product_id, unselect }) => {
+    return await productModel.findById(product_id)
+        .select(notGetFiledsSelect(unselect))
         .lean()
 }
 
@@ -59,7 +79,6 @@ const unpublishProductByShop = async ({ product_shop, product_id }) => {
     foundShop.isDraft = true
     foundShop.isPublished = false
     return await foundShop.save()
-
 }
 
 
@@ -68,5 +87,7 @@ export {
     getPublishedListByShop,
     publishProductByShop,
     unpublishProductByShop,
-    searchProduct
+    searchProduct,
+    getAllProduct,
+    getProductById
 }

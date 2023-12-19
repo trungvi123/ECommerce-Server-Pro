@@ -5,8 +5,9 @@ import { productModel, clothingModel, electronicsModel } from "../models/product
 import {
     getAllProduct,
     getDraftListByShop, getProductById, getPublishedListByShop, publishProductByShop,
-    searchProduct, unpublishProductByShop
+    searchProduct, unpublishProductByShop, updateProductById
 } from "../models/repositories/product.repo.js"
+import { removeUndefinedInObject, updateNestedObjectParser } from "../utils/index.js"
 
 class ProductFactory {
 
@@ -21,6 +22,13 @@ class ProductFactory {
         if (!product_class) throw new BadrequestError('Error type product')
 
         return new product_class(payload).createProduct()
+    }
+
+    static updateProduct(type, product_id, payload) {
+        const product_class = ProductFactory.typeProduct[type]
+        if (!product_class) throw new BadrequestError('Error type product')
+
+        return new product_class(payload).updateProduct(product_id)
     }
 
     // PUT | POST
@@ -83,6 +91,10 @@ class Product {
         return await productModel.create({ ...this, _id: product_id })
     }
 
+    async updateProduct(product_id, payload) {
+        return await updateProductById({ product_id, payload, model: productModel })
+    }
+
 }
 
 
@@ -97,6 +109,18 @@ class Clothing extends Product {
         const newProduct = await super.createProduct(newClothing._id)
         if (!newProduct) throw new BadrequestError('Created product err')
         return newProduct
+    }
+
+
+    async updateProduct(product_id) {
+        const objectParams = removeUndefinedInObject(this)
+        const product_attributes = objectParams.product_attributes
+        if (product_attributes) {
+            await updateProductById({ product_id, payload: updateNestedObjectParser(product_attributes), model: clothingModel })
+        }
+
+        const updateProduct = await super.updateProduct(product_id, updateNestedObjectParser(objectParams))
+        return updateProduct
     }
 }
 

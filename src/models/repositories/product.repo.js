@@ -22,7 +22,7 @@ const getListByQuery = async ({ query, limit = 50, skip = 0 }) => {
 }
 
 
-const getAllProduct = async ({ page, limit, sort,filter,select }) => {
+const getAllProduct = async ({ page, limit, sort, filter, select }) => {
     const skip = (page - 1) * limit
     const sortBy = sort === 'ctime' ? { _id: -1 } : { _id: 1 }
 
@@ -81,6 +81,16 @@ const unpublishProductByShop = async ({ product_shop, product_id }) => {
     return await foundShop.save()
 }
 
+const updateProductById = async ({
+    product_id,
+    payload,
+    model,
+    isNew = true
+}) => {
+    const update = await model.findByIdAndUpdate(product_id, payload, { new: isNew })
+    return update
+}
+
 
 export {
     getDraftListByShop,
@@ -89,5 +99,6 @@ export {
     unpublishProductByShop,
     searchProduct,
     getAllProduct,
-    getProductById
+    getProductById,
+    updateProductById
 }

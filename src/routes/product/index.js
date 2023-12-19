@@ -9,7 +9,7 @@ const router = express.Router()
 router.get('/', asyncHandler(productController.getAllProduct))
 router.get('/search/:keyword', asyncHandler(productController.searchProduct))
 
-router.get('/:id', asyncHandler(productController.getProductById))
+router.get('/detail/:id', asyncHandler(productController.getProductById))
 
 
 router.use(authentication)
@@ -21,6 +21,11 @@ router.post('/publish/:id', asyncHandler(productController.publishProductByShop)
 router.post('/unpublish/:id', asyncHandler(productController.unpublishProductByShop))
 
 router.post('/', asyncHandler(productController.createProduct))
+
+
+router.patch('/:id', asyncHandler(productController.updateProduct))
+
+
 
 
 export default router

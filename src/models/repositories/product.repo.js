@@ -40,6 +40,12 @@ const getProductById = async ({ product_id, unselect }) => {
         .lean()
 }
 
+const getProductByIdSelect = async ({ product_id, select }) => {
+    return await productModel.findById(product_id)
+        .select(getFiledsSelect(select))
+        .lean()
+}
+
 const searchProduct = async (keyword) => {
     const regex = new RegExp(keyword)
     const result = productModel.find({
@@ -100,5 +106,6 @@ export {
     searchProduct,
     getAllProduct,
     getProductById,
-    updateProductById
+    updateProductById,
+    getProductByIdSelect
 }

@@ -23,7 +23,7 @@ class CartController {
         new SuccessResponse({
             message: 'Delete cart success!',
             metadata: await CartService.deleteItemInCart(req.body)
-        }).send(res)
+        }).send(res) 
     }
     // QUERY
     getListCart = async (req, res, next) => {

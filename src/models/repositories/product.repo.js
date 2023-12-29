@@ -40,7 +40,7 @@ const getProductById = async ({ product_id, unselect }) => {
         .lean()
 }
 
-const getProductByIdSelect = async ({ product_id, select }) => {
+const getProductByIdSelect = async ({ product_id, select = [] }) => {
     return await productModel.findById(product_id)
         .select(getFiledsSelect(select))
         .lean()

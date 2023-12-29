@@ -94,7 +94,7 @@ class Product {
             await insertInventory({
                 product_id: newProduct._id,
                 shopId: this.product_shop,
-                stock:this.product_quantity
+                stock: this.product_quantity
             })
         }
 

@@ -1,6 +1,6 @@
 'use strict'
 
-import { inventoryModel } from "../inventory.model"
+import { inventoryModel } from "../inventory.model.js"
 
 
 const insertInventory = async ({

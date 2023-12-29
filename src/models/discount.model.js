@@ -1,3 +1,5 @@
+'use strict'
+
 import mongoose, { Types } from "mongoose"
 
 

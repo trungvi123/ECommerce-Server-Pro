@@ -1,3 +1,5 @@
+'use strict'
+
 import mongoose, { Schema, Types } from "mongoose"
 import slugify from "slugify"
 

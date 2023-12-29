@@ -16,6 +16,14 @@ class DiscountController {
         }).send(res)
     }
 
+    deleteDiscount = async (req, res, next) => {
+        console.log(req.body);
+        new SuccessResponse({
+            message: 'Delete discount success!',
+            metadata: await DiscountService.deleteDiscount(req.body)
+        }).send(res)
+    }
+
 
     // QUERY
     getAllAvailableProductWithDiscount = async (req, res, next) => {
@@ -33,7 +41,7 @@ class DiscountController {
             message: 'Success!',
             metadata: await DiscountService.getAllDiscountByShop(
                 {
-                    discount_shop : req.params.id,
+                    discount_shop: req.params.id,
                     ...req.query
                 })
         }).send(res)

@@ -6,8 +6,8 @@ import { reservationInventory } from '../models/repositories/inventory.repo.js'
 
 const redisClient = redis.createClient()
 
-const pexpire = promisify(redisClient.pexpire).bind(redisClient)
-const setnxAsync = promisify(redisClient.setnx).bind(redisClient)
+const pexpire = promisify(redisClient.PEXPIRE).bind(redisClient)
+const setnxAsync = promisify(redisClient.SETNX).bind(redisClient)
 
 
 const acquireLock = async (product_id, quantity, cartId) => {

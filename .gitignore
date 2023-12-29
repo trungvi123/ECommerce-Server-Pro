@@ -1,2 +1,5 @@
 node_modules
 .env
+
+src/models/comment.model.js
+src/services/comment.service.js

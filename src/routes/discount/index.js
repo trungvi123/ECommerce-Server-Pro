@@ -13,7 +13,9 @@ router.use(authentication)
 
 
 router.get('/:id', asyncHandler(discountController.getAllDiscountByShop))
+router.post('/delete', asyncHandler(discountController.deleteDiscount))
 router.post('/', asyncHandler(discountController.createDiscount))
+
 
 
 

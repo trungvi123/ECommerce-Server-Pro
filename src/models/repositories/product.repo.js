@@ -46,6 +46,25 @@ const getProductByIdSelect = async ({ product_id, select }) => {
         .lean()
 }
 
+const checkProductByServer = async (products) => {
+    const result = []
+    for (const product of products) {
+        const foundProduct = await getProductByIdSelect({
+            product_id: product.product_id,
+            select: ['product_price']
+        })
+        if (foundProduct) {
+            result.push({
+                price: foundProduct.product_price,
+                quantity: product?.quantity,
+                product_id: product?.product_id
+            })
+        }
+    }
+    return result
+}
+
+
 const searchProduct = async (keyword) => {
     const regex = new RegExp(keyword)
     const result = productModel.find({
@@ -98,6 +117,8 @@ const updateProductById = async ({
 }
 
 
+
+
 export {
     getDraftListByShop,
     getPublishedListByShop,
@@ -107,5 +128,6 @@ export {
     getAllProduct,
     getProductById,
     updateProductById,
-    getProductByIdSelect
+    getProductByIdSelect,
+    checkProductByServer
 }

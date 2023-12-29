@@ -7,7 +7,7 @@ import keyTokenService from '../services/keyToken.service.js'
 
 const HEADER = {
     API_KEY: 'x-api-key',
-    AUTHORIZATION: 'athorization',
+    AUTHORIZATION: 'authorization',
     CLIENT_ID: 'x-client-id',
     REFRESHTOKEN : 'x-rtoken-id'
 }

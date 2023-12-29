@@ -2,6 +2,7 @@
 
 import { BadrequestError } from "../core/error.response.js"
 import { productModel, clothingModel, electronicsModel } from "../models/product.model.js"
+import { insertInventory } from "../models/repositories/inventory.repo.js"
 import {
     getAllProduct,
     getDraftListByShop, getProductById, getPublishedListByShop, publishProductByShop,
@@ -88,7 +89,16 @@ class Product {
     }
 
     async createProduct(product_id) {
-        return await productModel.create({ ...this, _id: product_id })
+        const newProduct = await productModel.create({ ...this, _id: product_id })
+        if (newProduct) {
+            await insertInventory({
+                product_id: newProduct._id,
+                shopId: this.product_shop,
+                stock:this.product_quantity
+            })
+        }
+
+        return newProduct
     }
 
     async updateProduct(product_id, payload) {

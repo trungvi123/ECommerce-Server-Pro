@@ -10,10 +10,10 @@ class DiscountService {
             code, start_date, end_date, isActive, name,
             description, type, min_order_value, discount_shop,
             max_uses, uses_count, users_used, max_uses_per_user,
-            applies_to, product_ids, value,max_value
+            applies_to, product_ids, value, max_value
         } = payload
 
-        
+
         if (new Date(start_date) >= new Date(end_date)) {
             throw new BadrequestError('Start date must be before end date')
         }
@@ -33,7 +33,7 @@ class DiscountService {
             discount_type: type, // giam theo phan tram 
             discount_value: value, // giam gia co dinh
             discount_code: code,
-            discount_max_value:max_value,
+            discount_max_value: max_value,
             discount_start_date: new Date(start_date), // ngay bat dau
             discount_end_date: new Date(end_date), // ngay ket thuc
             discount_max_uses: max_uses, // số lượng discount
@@ -57,7 +57,7 @@ class DiscountService {
             discount_shop
         })
 
-        if (!foundDiscount && !foundDiscount.discount_isActive) {
+        if (!foundDiscount && !foundDiscount?.discount_isActive) {
             throw new BadrequestError('Discount not exist!')
         }
 
@@ -122,17 +122,17 @@ class DiscountService {
         if (!foundDiscount && !foundDiscount?.discount_isActive) {
             throw new BadrequestError('Discount not exist!')
         }
-
+        // chi giu lai cac san pham co the su dung discount nay
+        products = products.filter((item) => foundDiscount.discount_product_ids.includes(item.product_id))
+        
         const {
             discount_min_order_value,
             discount_users_used,
             discount_max_uses_per_user,
             discount_type,
             discount_value,
-            discount_start_date,
-            discount_end_date
         } = foundDiscount
-      
+
 
         let totalOrder = 0
         if (discount_min_order_value > 0) {
@@ -162,13 +162,14 @@ class DiscountService {
     }
 
     static async deleteDiscount({ shopId, code }) {
+        console.log({ shopId, code });
         return await DiscountModel.findOneAndDelete({
             discount_code: code,
             discount_shop: shopId
         })
     }
 
-    static async cancelDiscount({ shopId, code ,userId}) {
+    static async cancelDiscount({ shopId, code, userId }) {
         const foundDiscount = await checkDiscountExist({
             discount_code: code,
             discount_shop
@@ -178,7 +179,7 @@ class DiscountService {
             throw new BadrequestError('Discount not exist!')
         }
 
-        const result = await DiscountModel.findByIdAndUpdate(foundDiscount._id,{
+        const result = await DiscountModel.findByIdAndUpdate(foundDiscount._id, {
             $pull: {
                 discount_users_used: userId
             },
@@ -186,8 +187,8 @@ class DiscountService {
                 discount_max_uses: 1,
                 discount_uses_count: -1
             }
-        })  
-        
+        })
+
         return result
     }
 }
